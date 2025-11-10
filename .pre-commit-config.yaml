@@ -1,0 +1,48 @@
+# To use run `pre-commit install`
+
+repos:
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args:
+          - "--profile=black"
+
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        args: 
+          - "--line-length=100"
+          - "--target-version=py39"
+          - "--target-version=py310"
+          - "--target-version=py311"
+          - "--target-version=py312"
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks
+        name: gitleaks (protect staged)
+        entry: gitleaks protect
+        args: 
+          - "--staged"
+          - "--no-banner"
+          - "--verbose"
+          - "--redact"
+          - "--config=.gitleaks.toml"
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0  
+    hooks:
+      - id: markdownlint
+        name: markdownlint
+        args: ["--config", ".markdownlint.json"]
+        files: \.md$  
+  
+      # pre-commit run markdownlint-fix --all-files --hook-stage manual
+      - id: markdownlint-fix
+        name: markdownlint-fix
+        args: ["--config", ".markdownlint.json", "--fix"]
+        files: \.md$
+        stages: [manual]

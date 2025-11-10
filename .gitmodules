@@ -1,0 +1,8 @@
+[submodule "black_pill/platform/STM32CubeF4"]
+	path = black_pill/platform/STM32CubeF4
+	url = https://github.com/STMicroelectronics/STM32CubeF4
+
+[submodule "thirdparty/wsh-shell"]
+	path = thirdparty/wsh-shell
+	url = https://github.com/whoosh-bike/wsh-shell
+	branch = dev
