@@ -2,7 +2,7 @@
 // #include "usb_device.h"
 // #include "usbd_cdc_if.h"
 
-#include "shell.h"
+// #include "shell.h"
 
 int _read(int file, char* ptr, int len) {
     // char c;
