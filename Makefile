@@ -68,7 +68,7 @@ DEPS := $(ALL_OBJS:.o=.d)
 
 # ===== Compiler Flags =====
 INCLUDE_FLAGS := $(INCLUDE_FLAGS_COMMON) $(WSH_SHELL_INCLUDE_FLAGS) -MMD -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-format
-CPU_FLAGS := -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb -DSTM32F411xE -DUSE_FULL_LL_DRIVER
+CPU_FLAGS := -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb -DSTM32F411xE -DUSE_FULL_LL_DRIVER -DHSE_VALUE=25000000
 
 LINKER_FLAGS += -Wl,-cref
 LINKER_FLAGS += -Wl,-u,Reset_Handler
