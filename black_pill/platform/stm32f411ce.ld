@@ -163,6 +163,14 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
+  /* NOINIT section for custom data */
+  .noInitData (NOLOAD) : ALIGN(4)
+  {
+    PROVIDE(__start_no_init_data = .) ;
+    *(.SHELL_HISTORY_DATA*)
+    PROVIDE(__end_no_init_data = .) ;
+  } >RAM 
+
   /* --- Discard Unused Standard Libraries --- */
   /* /DISCARD/ :
   {
