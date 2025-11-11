@@ -1,0 +1,59 @@
+{
+    "version": "2.0.0",
+    "problemMatcher": "$gcc",
+    "tasks": [
+        {
+            "label": "🧼 clean",
+            "type": "shell",
+            "command": "make -j8 clean",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "⚒️ build black_pill: release",
+            "type": "shell",
+            "command": "make -j8 BUILD=Release",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "⚒️  build black_pill: debug",
+            "type": "shell",
+            "command": "make -j8",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "♺ generate launch.json",
+            "type": "shell",
+            "command": "${workspaceFolder}/.venv/bin/python3",
+            "args": [
+                "${workspaceFolder}/utils/gen-launch.py"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "⚡️ flash black_pill",
+            "type": "shell",
+            "command": "openocd",
+            "args": [
+                "-f", "${workspaceFolder}/black_pill/stlink.cfg",
+                "-f", "${workspaceFolder}/black_pill/stm32f4x.cfg",
+                "-c", "program ${workspaceFolder}/black_pill/build/black_pill.elf verify reset exit"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug black_pill (OpenOCD-STLink)",
+            "presentation": {
+                "group": "Local"
+            },
+            "type": "cortex-debug",
+            "request": "launch",
+            "executable": "${workspaceFolder}/black_pill/build/black_pill.elf",
+            "svdFile": "${workspaceFolder}/black_pill/platform/stm32f411.svd",
+            "gdbPath": "{{ GDB_PATH }}",
+            "showDevDebugOutput": "raw",
+            "servertype": "openocd",
+            "serverpath": "{{ OPENOCD_PATH }}",
+            "interface": "swd",
+            "configFiles": [
+                "${workspaceFolder}/black_pill/stlink.cfg",
+                "${workspaceFolder}/black_pill/stm32f4x.cfg"
+            ]
+        }
+    ]
+}
