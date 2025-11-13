@@ -1,28 +1,27 @@
 #include "main.h"
 #include "usb_device.h"
-
 // #include "shell.h"
 
 int _read(int file, char* ptr, int len) {
-    // char c;
-    // while (CDC_GetRxBufferBytesAvailable_FS() == 0) {
-    // }
+    char c;
+    while (CDC_GetRxBufferBytesAvailable_FS() == 0) {
+    }
 
-    // if (CDC_ReadRxBuffer_FS((uint8_t*)&c, 1) == USB_CDC_RX_BUFFER_OK) {
-    //     *ptr++ = c;
-    //     return 1;
-    // }
+    if (CDC_ReadRxBuffer_FS((uint8_t*)&c, 1) != 0) {
+        *ptr++ = c;
+        return 1;
+    }
 
     return -1;
 }
 
 int _write(int file, char* ptr, int len) {
     (void)file;
-    // for (int i = 0; i < len; i++) {
-    //     char c = (char)(*ptr++);
-    //     while (CDC_Transmit_FS((uint8_t*)&c, 1) == USBD_BUSY) {
-    //     }
-    // }
+    for (int i = 0; i < len; i++) {
+        char c = (char)(*ptr++);
+        while (CDC_Transmit_FS((uint8_t*)&c, 1) == USBD_BUSY) {
+        }
+    }
 
     return len;
 }
@@ -81,9 +80,15 @@ int main(void) {
     HAL_Init();
     SystemClock_Config();
     UsbCdcDevice_Init();
+    HAL_Delay(2000);
 
-    while (1)
-        ;
+    while (1) {
+        int symbol = getchar();
+        printf("key: %c / %d / 0x%02X\r\n", symbol, (unsigned char)symbol);
+
+        if (symbol == EOF)
+            continue;
+    }
 }
 
 void Error_Handler(void) {
