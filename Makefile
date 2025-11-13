@@ -49,10 +49,10 @@ SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm
 # SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c
 SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c
 SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c
-# SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
-# SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
-# SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
-# SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
+SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
+SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
+SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
+SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
 SRCS += $(EXAMPLE_DIR)/platform/startup_stm32f411xe.s
 
 OBJS := $(SRCS:%=$(OBJ_DIR)/%.o)
