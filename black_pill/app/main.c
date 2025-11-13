@@ -1,6 +1,6 @@
 #include "main.h"
+#include "shell.h"
 #include "usb_device.h"
-// #include "shell.h"
 
 int _read(int file, char* ptr, int len) {
     char c;
@@ -82,12 +82,17 @@ int main(void) {
     UsbCdcDevice_Init();
     HAL_Delay(2000);
 
+    if (!Shell_Init("black-pill"))
+        Error_Handler();
+
     while (1) {
         int symbol = getchar();
-        printf("key: %c / %d / 0x%02X\r\n", symbol, (unsigned char)symbol);
+        // printf("key: %c / %d / 0x%02X\r\n", symbol, (unsigned char)symbol);
 
         if (symbol == EOF)
             continue;
+
+        Shell_SendChar((char)symbol);
     }
 }
 
