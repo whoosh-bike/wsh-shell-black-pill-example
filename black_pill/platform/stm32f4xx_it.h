@@ -30,11 +30,6 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
-
-// #ifdef USE_USB_FS
-// void OTG_FS_IRQHandler(void);
-// #else
-// void OTG_HS_IRQHandler(void);
-// #endif
+void OTG_FS_IRQHandler(void);
 
 #endif /* __STM32F4xx_IT_H */

@@ -21,7 +21,7 @@
 #include "stm32f4xx_it.h"
 #include "main.h"
 
-extern PCD_HandleTypeDef hpcd;
+extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 void NMI_Handler(void) {
 }
@@ -59,11 +59,6 @@ void SysTick_Handler(void) {
     HAL_IncTick();
 }
 
-// #ifdef USE_USB_FS
-// void OTG_FS_IRQHandler(void)
-// #else
-// void OTG_HS_IRQHandler(void)
-// #endif
-// {
-//     HAL_PCD_IRQHandler(&hpcd);
-// }
+void OTG_FS_IRQHandler(void) {
+    HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
+}

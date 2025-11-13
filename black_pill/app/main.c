@@ -1,6 +1,5 @@
 #include "main.h"
-// #include "usb_device.h"
-// #include "usbd_cdc_if.h"
+#include "usb_device.h"
 
 // #include "shell.h"
 
@@ -81,8 +80,7 @@ void SystemClock_Config(void) {
 int main(void) {
     HAL_Init();
     SystemClock_Config();
-
-    assert_param(0);
+    UsbCdcDevice_Init();
 
     while (1)
         ;
