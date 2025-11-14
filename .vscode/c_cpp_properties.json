@@ -19,6 +19,10 @@
                 "${workspaceFolder}/black_pill/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
                 "${workspaceFolder}/black_pill/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Core/Inc",
                 "${workspaceFolder}/black_pill/platform/STM32CubeF4/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc",
+                "${workspaceFolder}/black_pill/rtos",
+                "${workspaceFolder}/black_pill/rtos/FreeRTOS-KernelV11.2.0",
+                "${workspaceFolder}/black_pill/rtos/FreeRTOS-KernelV11.2.0/include",
+                "${workspaceFolder}/black_pill/rtos/FreeRTOS-KernelV11.2.0/portable/GCC/ARM_CM4F",
                 "${workspaceFolder}/thirdparty/wsh-shell/src"
             ],
             "defines": [
@@ -29,8 +33,8 @@
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-arm",
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "intelliSenseMode": "linux-gcc-arm"
+            // "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
