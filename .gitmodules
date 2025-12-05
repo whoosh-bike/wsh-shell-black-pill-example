@@ -6,3 +6,8 @@
 	path = thirdparty/wsh-shell
 	url = https://github.com/whoosh-bike/wsh-shell
 	branch = dev
+
+[submodule "thirdparty/berry-lang"]
+	path = thirdparty/berry-lang
+	url = https://github.com/katbert-92/berry
+	branch = integration_branch
