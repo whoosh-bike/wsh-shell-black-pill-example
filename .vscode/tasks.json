@@ -30,18 +30,6 @@
             }
         },
         {
-            "label": "♺ generate launch.json",
-            "type": "shell",
-            "command": "${workspaceFolder}/.venv/bin/python3",
-            "args": [
-                "${workspaceFolder}/utils/gen-launch.py"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
             "label": "⚡️ flash black_pill",
             "type": "shell",
             "command": "openocd",
@@ -49,6 +37,31 @@
                 "-f", "${workspaceFolder}/black_pill/stlink.cfg",
                 "-f", "${workspaceFolder}/black_pill/stm32f4x.cfg",
                 "-c", "program ${workspaceFolder}/black_pill/build/black_pill.elf verify reset exit"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "⌨️ Setup python env",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "python3 -m venv .venv && source .venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "♺ generate launch.json",
+            "type": "shell",
+            "command": "${workspaceFolder}/.venv/bin/python3",
+            "args": [
+                "${workspaceFolder}/utils/gen-launch.py"
             ],
             "group": {
                 "kind": "build",

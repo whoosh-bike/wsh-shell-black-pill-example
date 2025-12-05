@@ -76,24 +76,57 @@ void SystemClock_Config(void) {
     __HAL_RCC_GPIOC_CLK_ENABLE();
 }
 
+void OneMsDelayTimInit(void) {
+    LL_TIM_InitTypeDef TIM_InitStruct = {0};
+
+    LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM4);
+
+    LL_TIM_StructInit(&TIM_InitStruct);
+    TIM_InitStruct.Prescaler   = __LL_TIM_CALC_PSC(SystemCoreClock, 1000000);
+    TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
+    TIM_InitStruct.Autoreload  = __LL_TIM_CALC_ARR(SystemCoreClock, TIM_InitStruct.Prescaler, 1000);
+    TIM_InitStruct.ClockDivision     = LL_TIM_CLOCKDIVISION_DIV1;
+    TIM_InitStruct.RepetitionCounter = 0;
+    LL_TIM_Init(TIM4, &TIM_InitStruct);
+
+    LL_TIM_EnableIT_UPDATE(TIM4);
+    LL_TIM_EnableCounter(TIM4);
+
+    NVIC_SetPriority(TIM4_IRQn, 0);
+    NVIC_EnableIRQ(TIM4_IRQn);
+}
+
+void TIM4_IRQHandler(void) {
+    if (LL_TIM_IsActiveFlag_UPDATE(TIM4)) {
+        HAL_IncTick();
+        LL_TIM_ClearFlag_UPDATE(TIM4);
+    }
+}
+
 int main(void) {
+    FreeRTOS_Shell_InitComponents(true, false);
+
     HAL_Init();
     SystemClock_Config();
+    OneMsDelayTimInit();
     UsbCdcDevice_Init();
-    HAL_Delay(2000);
 
-    if (!Shell_Init("black-pill"))
-        Error_Handler();
+    // while (1) { //no-os flow
+    //     int symbol = getchar();
+    //     // printf("key: %c / %d / 0x%02X\r\n", symbol, (unsigned char)symbol);
 
-    while (1) {
-        int symbol = getchar();
-        // printf("key: %c / %d / 0x%02X\r\n", symbol, (unsigned char)symbol);
+    //     if (symbol == EOF)
+    //         continue;
 
-        if (symbol == EOF)
-            continue;
+    //     Shell_SendChar((char)symbol);
+    // }
 
-        Shell_SendChar((char)symbol);
+    FreeRTOS_Shell_InitComponents(false, true);
+    vTaskStartScheduler();
+    for (;;) {
     }
+
+    return 0;
 }
 
 void Error_Handler(void) {
@@ -108,3 +141,7 @@ void assert_failed(uint8_t* file, uint32_t line) {
     Error_Handler();
 }
 #endif /* USE_FULL_ASSERT */
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
+    Error_Handler();
+}

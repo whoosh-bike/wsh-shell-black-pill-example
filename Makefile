@@ -46,6 +46,7 @@ SRCS += $(wildcard $(EXAMPLE_DIR)/rtos/FreeRTOS-KernelV11.2.0/portable/Common/*.
 SRCS += $(wildcard $(EXAMPLE_DIR)/rtos/FreeRTOS-KernelV11.2.0/portable/GCC/ARM_CM4F/*.c)
 SRCS += $(wildcard $(EXAMPLE_DIR)/rtos/FreeRTOS-KernelV11.2.0/portable/MemMang/*.c)
 SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c
+SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c
 SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
 SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c
 SRCS += $(EXAMPLE_DIR)/platform/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c
@@ -90,7 +91,7 @@ LINKER_FLAGS += -Wl,--no-warn-rwx-segments
 
 LINKER_SCRIPT := $(EXAMPLE_DIR)/platform/stm32f411ce.ld
 
-DEBUG_FLAGS := -O0 -g -DWSH_SHELL_ASSERT_ENABLE -DUSE_FULL_ASSERT
+DEBUG_FLAGS := -O0 -g -DWSH_SHELL_ASSERT_ENABLE -DUSE_FULL_ASSERT -DDEBUG_ENABLE
 RELEASE_FLAGS := -O2 -DNDEBUG
 
 ifeq ($(BUILD),Debug)

@@ -1,6 +1,7 @@
 #ifndef __WSH_SHELL_CFG_H
 #define __WSH_SHELL_CFG_H
 
+#include "def_rtos.h"
 #include "wsh_shell_types.h"
 
 /* 
