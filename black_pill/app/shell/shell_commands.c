@@ -3,9 +3,16 @@
 extern const WshShellCmd_t Shell_LedCmd;
 extern const WshShellCmd_t Shell_ResetCmd;
 
+#if BERRY_LANG
+extern const WshShellCmd_t Shell_BerryLangCmd;
+#endif /* BERRY_LANG */
+
 static const WshShellCmd_t* Shell_CmdTable[] = {
     &Shell_LedCmd,
     &Shell_ResetCmd,
+#if BERRY_LANG
+    &Shell_BerryLangCmd,
+#endif /* BERRY_LANG */
 };
 
 bool Shell_Commands_Init(WshShell_t* pShell) {
