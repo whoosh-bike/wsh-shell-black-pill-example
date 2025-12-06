@@ -6,6 +6,8 @@
             "includePath": [
                 "${workspaceFolder}/black_pill",
                 "${workspaceFolder}/black_pill/app",
+                "${workspaceFolder}/black_pill/app/berry_lang",
+                "${workspaceFolder}/black_pill/app/berry_lang/port",
                 "${workspaceFolder}/black_pill/app/shell",
                 "${workspaceFolder}/black_pill/app/usb",
                 "${workspaceFolder}/black_pill/platform",
@@ -23,7 +25,9 @@
                 "${workspaceFolder}/black_pill/rtos/FreeRTOS-KernelV11.2.0",
                 "${workspaceFolder}/black_pill/rtos/FreeRTOS-KernelV11.2.0/include",
                 "${workspaceFolder}/black_pill/rtos/FreeRTOS-KernelV11.2.0/portable/GCC/ARM_CM4F",
-                "${workspaceFolder}/thirdparty/wsh-shell/src"
+                "${workspaceFolder}/thirdparty/wsh-shell/src",
+                "${workspaceFolder}/thirdparty/berry-lang/generate",
+                "${workspaceFolder}/thirdparty/berry-lang/src"
             ],
             "defines": [
                 "STM32F411xE",
