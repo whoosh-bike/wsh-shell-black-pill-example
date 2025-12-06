@@ -86,7 +86,7 @@ ALL_OBJS := $(OBJS) $(WSH_SHELL_OBJS) $(BERRY_LANG_OBJS)
 DEPS := $(ALL_OBJS:.o=.d)
 
 # ===== Compiler Flags =====
-INCLUDE_FLAGS := $(INCLUDE_FLAGS_COMMON) $(WSH_SHELL_INCLUDE_FLAGS) $(BERRY_LANG_INCLUDE_FLAGS) -MMD -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-format
+INCLUDE_FLAGS := $(INCLUDE_FLAGS_COMMON) $(WSH_SHELL_INCLUDE_FLAGS) $(BERRY_LANG_INCLUDE_FLAGS)
 CPU_FLAGS := -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb -DSTM32F411xE -DUSE_FULL_LL_DRIVER -DHSE_VALUE=25000000
 
 LINKER_FLAGS += -Wl,-cref
@@ -105,10 +105,24 @@ LINKER_SCRIPT := $(EXAMPLE_DIR)/platform/stm32f411ce.ld
 DEBUG_FLAGS := -O0 -g -DWSH_SHELL_ASSERT_ENABLE -DUSE_FULL_ASSERT -DDEBUG_ENABLE
 RELEASE_FLAGS := -O2 -DNDEBUG
 
+C_FLAGS += -ffunction-sections
+C_FLAGS += -fdata-sections
+C_FLAGS += -fstack-usage
+C_FLAGS += -std=gnu11
+C_FLAGS += -Wall
+C_FLAGS += -Wextra
+C_FLAGS += -Wpedantic
+C_FLAGS += -Wno-unused-function
+C_FLAGS += -Wno-unused-parameter
+C_FLAGS += -Wno-format
+C_FLAGS += -MMD
+
+COMPILE_FLAGS += $(INCLUDE_FLAGS) $(C_FLAGS) $(CPU_FLAGS)
+
 ifeq ($(BUILD),Debug)
-    CFLAGS := $(INCLUDE_FLAGS) $(CPU_FLAGS) $(DEBUG_FLAGS)
+    COMPILE_FLAGS += $(DEBUG_FLAGS) 
 else
-    CFLAGS := $(INCLUDE_FLAGS) $(CPU_FLAGS) $(RELEASE_FLAGS)
+    COMPILE_FLAGS += $(RELEASE_FLAGS)
 endif
 
 # ===== Targets =====
@@ -129,22 +143,22 @@ $(BUILD_DIR)/$(TARGET): $(ALL_OBJS)
 $(OBJ_DIR)/%.c.o: %.c
 	@echo "[CC] $<"
 	@$(MKDIR) $(dir $@)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(COMPILE_FLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.s.o: %.s
 	@echo "[AS] $<"
 	@$(MKDIR) $(dir $@)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(COMPILE_FLAGS) -c $< -o $@
 
 $(OBJ_DIR)/src/%.o: $(WSH_SHELL_DIR)/%.c
 	@echo "[CC] $<"
 	@$(MKDIR) $(dir $@)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(COMPILE_FLAGS) -c $< -o $@
 
 $(OBJ_DIR)/src/%.o: $(BERRY_LANG_DIR)/%.c
 	@echo "[CC] $<"
 	@$(MKDIR) $(dir $@)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(COMPILE_FLAGS) -c $< -o $@
 
 clean:
 	@echo "[CLEAN] Removing build directory"
