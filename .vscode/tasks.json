@@ -21,7 +21,7 @@
             }
         },
         {
-            "label": "⚒️  build black_pill: debug",
+            "label": "⚒️ build black_pill: debug",
             "type": "shell",
             "command": "make -j8",
             "group": {
