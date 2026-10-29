@@ -40,7 +40,8 @@ static WSH_SHELL_RET_STATE_t shell_cmd_reset(const WshShellCmd_t* pcCmd, WshShel
         WshShellOption_Ctx_t optCtx =
             WshShellCmd_ParseOpt(pcCmd, argc, pArgv, pParentShell->CurrUser->Rights, &tokenPos);
         if (!optCtx.Option)
-            return WSH_SHELL_RET_STATE_ERR_EMPTY;
+            return optCtx.ParseError ? WSH_SHELL_RET_STATE_ERR_PARAM
+                                     : WSH_SHELL_RET_STATE_ERR_EMPTY;
 
         switch (optCtx.Option->ID) {
             case CMD_RESET_OPT_DEF:

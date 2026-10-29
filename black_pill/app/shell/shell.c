@@ -30,6 +30,7 @@ static const WshShellUser_t Shell_UserTable[] = {
 };
 
 static __attribute__((section(".SHELL_HISTORY_DATA"))) WshShellHistory_t Shell_HistoryStorage;
+static __attribute__((section(".SHELL_SESSION_DATA"))) WshShellSession_t Shell_SessionStorage;
 
 static WshShellHistory_t Shell_HistoryRead(void) {
     return Shell_HistoryStorage;
@@ -37,6 +38,14 @@ static WshShellHistory_t Shell_HistoryRead(void) {
 
 static void Shell_HistoryWrite(WshShellHistory_t history) {
     memcpy((void*)&Shell_HistoryStorage, (void*)&history, sizeof(WshShellHistory_t));
+}
+
+static WshShellSession_t Shell_SessionRead(void) {
+    return Shell_SessionStorage;
+}
+
+static void Shell_SessionWrite(WshShellSession_t session) {
+    memcpy((void*)&Shell_SessionStorage, (void*)&session, sizeof(WshShellSession_t));
 }
 
 static void Shell_AuthClbk(void* pCtx) {
@@ -76,9 +85,12 @@ bool Shell_Init(const char* pcHostName) {
     }
 
     WshShellHistory_Init(&Shell.HistoryIO, Shell_HistoryRead, Shell_HistoryWrite);
+    WshShellSession_Init(&Shell.SessionIO, Shell_SessionRead, Shell_SessionWrite);
 
     if (!Shell_Commands_Init(&Shell))
         return false;
+
+    WshShell_SessionRestore(&Shell);
 
     // WshShell_Auth(&Shell, "admin", "1234");  //For quick auth
 
@@ -96,7 +108,8 @@ static void vTask_Shell_Process(void* pvParameters) {
         Error_Handler();
 
 #if DEBUG_ENABLE
-    WshShell_Auth(&Shell, "admin", "1234");
+    if (!WshShell_IsAuth(&Shell))
+        WshShell_Auth(&Shell, "admin", "1234");
 #endif /* DEBUG_ENABLE */
 
     for (;;) {
@@ -111,6 +124,9 @@ static void vTask_Shell_Process(void* pvParameters) {
 }
 
 static void ShellRoot_ResetTimerClbk(TimerHandle_t xTimer) {
+    if (WshShell_SessionIsKeepActive(&Shell))
+        return;
+
     WshShell_DeAuth(&Shell, (WshShell_Char_t*)pcTimerGetName(ShellExit_Timer));
 }
 

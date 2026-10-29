@@ -112,7 +112,8 @@ static WSH_SHELL_RET_STATE_t ShellCmdBerry(const WshShellCmd_t* pcCmd, WshShell_
         WshShellOption_Ctx_t optCtx =
             WshShellCmd_ParseOpt(pcCmd, argc, pArgv, pParentShell->CurrUser->Rights, &tokenPos);
         if (!optCtx.Option)
-            return WSH_SHELL_RET_STATE_ERR_EMPTY;
+            return optCtx.ParseError ? WSH_SHELL_RET_STATE_ERR_PARAM
+                                     : WSH_SHELL_RET_STATE_ERR_EMPTY;
 
         switch (optCtx.Option->ID) {
             case BERRY_OPT_HELP:
