@@ -4,29 +4,24 @@
 #include "def_rtos.h"
 #include "wsh_shell_types.h"
 
-/* 
+/*
  * ─────────────────────────────────────────────
  * Shell welcome banner (ASCII logo)
- * ───────────────────────────────────────────── 
+ * ─────────────────────────────────────────────
+ * Optional. The wsh-shell logo is built into the library (wsh_shell.h).
+ * Define WSH_SHELL_HEADER here to replace it with a project-specific one,
+ * or with "" to print no banner at all. A per-instance banner can also be
+ * passed at runtime as the pcCustomHeader argument of WshShell_Init().
+ * Use utils/gen-shell-banner.py to render an ASCII logo from plain text.
  */
-
-/* clang-format off */
-#define WSH_SHELL_HEADER "\
-                __               __         ____  \r\n\
- _      _______/ /_        _____/ /_  ___  / / /  \r\n\
-| | /| / / ___/ __ \\______/ ___/ __ \\/ _ \\/ / /\r\n\
-| |/ |/ (__  ) / / /_____(__  ) / / /  __/ / /    \r\n\
-|__/|__/____/_/ /_/     /____/_/ /_/\\___/_/_/    \r\n\
-\r\n"
-/* clang-format on */
 
 /* 
  * ─────────────────────────────────────────────
  * Target runtime environment 
  * ───────────────────────────────────────────── 
  */
-#define WSH_SHELL_TARGET_OS "Bare-metal"
-// #define WSH_SHELL_TARGET_OS "FreeRTOS"
+// #define WSH_SHELL_TARGET_OS "Bare-metal"
+#define WSH_SHELL_TARGET_OS "FreeRTOS"
 // #define WSH_SHELL_TARGET_OS "Zephyr"
 
 /* 
@@ -59,9 +54,10 @@
  * Command autocompletion
  * ───────────────────────────────────────────── 
  */
-#define WSH_SHELL_AUTOCOMPLETE         1
-#define WSH_SHELL_AUTOCOMPLETE_PAD_LEN 32
-#define WSH_SHELL_AUTOCOMPLETE_PAD_SYM '.'
+#define WSH_SHELL_AUTOCOMPLETE                1
+#define WSH_SHELL_AUTOCOMPLETE_PAD_LEN        32
+#define WSH_SHELL_AUTOCOMPLETE_PAD_SYM        '.'
+#define WSH_SHELL_AUTOCOMPLETE_MAX_CANDIDATES 32
 
 /* 
  * ─────────────────────────────────────────────
@@ -79,12 +75,54 @@
  */
 #define WSH_SHELL_PROMPT_WAIT 1
 
-/* 
+/* How many refused keystrokes still reprint the "press ..." hint before the
+ * wait goes quiet. The bell keeps sounding on every one of them. */
+#define WSH_SHELL_PROMPT_WAIT_HINT_RETRIES 3
+
+/*
+ * ─────────────────────────────────────────────
+ * Shell state line for host tools (docs/usage/shell-state.md)
+ * ─────────────────────────────────────────────
+ * Prints {"evt":"shell","state":"login|ready|busy",...} on every state change
+ * and in answer to ENQ (0x05), so a host never has to probe with Enter.
+ */
+#define WSH_SHELL_STATE_LINE 1
+
+/*
  * ─────────────────────────────────────────────
  * Default shell command (executed at startup)
- * ───────────────────────────────────────────── 
+ * ─────────────────────────────────────────────
  */
 #define WSH_SHELL_DEF_COMMAND 1
+
+/*
+ * ─────────────────────────────────────────────
+ * Persistent login session (`wsh --keep`, survives reboots)
+ * ─────────────────────────────────────────────
+ */
+#define WSH_SHELL_SESSION 1
+
+/*
+ * ─────────────────────────────────────────────
+ * Subcommand tree (nested commands, e.g. `wsh user list`)
+ * ─────────────────────────────────────────────
+ */
+#define WSH_SHELL_SUBCOMMANDS           1
+#define WSH_SHELL_SUBCOMMANDS_MAX_DEPTH 3
+
+/*
+ * ─────────────────────────────────────────────
+ * Enum option type (closed-set string values with autocomplete)
+ * ─────────────────────────────────────────────
+ */
+#define WSH_SHELL_ENUM_VALUE_MAX_LEN 16 /* max length of a single enum value string */
+
+/*
+ * ─────────────────────────────────────────────
+ * Hex dump (WshShellMisc_HexDump)
+ * ─────────────────────────────────────────────
+ */
+#define WSH_HEXDUMP_COLS 16 /* bytes per row */
 
 /* 
  * ─────────────────────────────────────────────
@@ -126,18 +164,18 @@ typedef enum { WSH_SHELL_CMD_GROUP_LIST } WSH_SHELL_CMD_GROUP_t;
  * General buffer and length settings
  * ───────────────────────────────────────────── 
  */
-#define WSH_SHELL_DEV_NAME_LEN          16   // Device name max length
-#define WSH_SHELL_OPTION_SHORT_NAME_LEN 2    // Short option name length
-#define WSH_SHELL_OPTION_LONG_NAME_LEN  16   // Long option name length
-#define WSH_SHELL_CMD_OPTIONS_MAX_NUM   16   // Max options per command
-#define WSH_SHELL_CMD_NAME_LEN          16   // Command name max length
-#define WSH_SHELL_CMD_ARGS_MAX_NUM      16   // Max arguments per command
-#define WSH_SHELL_LOGIN_LEN             16   // Max user name length
-#define WSH_SHELL_SALT_LEN              16   // Max salt length
-#define WSH_SHELL_PASS_LEN              16   // Max password length
-#define WSH_SHELL_SALT_PASS_HASH_LEN    64   // Password + salt hash length
-#define WSH_SHELL_INTR_BUFF_LEN         128  // Interactive input buffer
-#define WSH_SHELL_ESC_BUFF_LEN          8    // Escape sequence buffer
+#define WSH_SHELL_DEV_NAME_LEN          16  // Device name max length
+#define WSH_SHELL_OPTION_SHORT_NAME_LEN 2   // Short option name length
+#define WSH_SHELL_OPTION_LONG_NAME_LEN  16  // Long option name length
+#define WSH_SHELL_CMD_OPTIONS_MAX_NUM   16  // Max options per command
+#define WSH_SHELL_CMD_NAME_LEN          16  // Command name max length
+#define WSH_SHELL_CMD_ARGS_MAX_NUM      16  // Max arguments per command
+#define WSH_SHELL_LOGIN_LEN             16  // Max user name length
+#define WSH_SHELL_SALT_LEN              16  // Max salt length
+#define WSH_SHELL_PASS_LEN              16  // Max password length
+#define WSH_SHELL_SALT_PASS_HASH_LEN    64  // Password + salt hash length
+#define WSH_SHELL_INTR_BUFF_LEN         128 // Interactive input buffer
+#define WSH_SHELL_ESC_BUFF_LEN          8   // Escape sequence buffer
 
 /* 
  * ─────────────────────────────────────────────
@@ -145,22 +183,14 @@ typedef enum { WSH_SHELL_CMD_GROUP_LIST } WSH_SHELL_CMD_GROUP_t;
  * ───────────────────────────────────────────── 
  */
 #ifdef WSH_SHELL_ASSERT_ENABLE
-    #include <assert.h>
-    #include <signal.h>
-    #ifndef WSH_SHELL_ASSERT
-        #define WSH_SHELL_ASSERT(exp) \
-            do {                      \
-                if (!(exp)) {         \
-                    raise(SIGTRAP);   \
-                    while (1) {       \
-                    }                 \
-                }                     \
-            } while (0)
-    #endif
+#include <assert.h>
+#ifndef WSH_SHELL_ASSERT
+#define WSH_SHELL_ASSERT(exp) assert(exp)
+#endif
 #else
-    #ifndef WSH_SHELL_ASSERT
-        #define WSH_SHELL_ASSERT(exp)
-    #endif
+#ifndef WSH_SHELL_ASSERT
+#define WSH_SHELL_ASSERT(exp)
+#endif
 #endif
 
 /* 
@@ -169,51 +199,51 @@ typedef enum { WSH_SHELL_CMD_GROUP_LIST } WSH_SHELL_CMD_GROUP_t;
  * ───────────────────────────────────────────── 
  */
 #ifndef WSH_SHELL_MEMSET
-    #define WSH_SHELL_MEMSET(pD, c, sz) memset((pD), (c), (sz))
+#define WSH_SHELL_MEMSET(pD, c, sz) memset((pD), (c), (sz))
 #endif
 
 #ifndef WSH_SHELL_MEMCPY
-    #define WSH_SHELL_MEMCPY(pD, pS, sz) memcpy((pD), (pS), (sz))
+#define WSH_SHELL_MEMCPY(pD, pS, sz) memcpy((pD), (pS), (sz))
 #endif
 
 #ifndef WSH_SHELL_MEMCMP
-    #define WSH_SHELL_MEMCMP(pD, pS, sz) memcmp((pD), (pS), (sz))
+#define WSH_SHELL_MEMCMP(pD, pS, sz) memcmp((pD), (pS), (sz))
 #endif
 
 #ifndef WSH_SHELL_STRCPY
-    #define WSH_SHELL_STRCPY(pD, pS) strcpy((pD), (pS))
+#define WSH_SHELL_STRCPY(pD, pS) strcpy((pD), (pS))
 #endif
 
 #ifndef WSH_SHELL_STRNCPY
-    #define WSH_SHELL_STRNCPY(pD, pS, sz) strncpy((pD), (pS), (sz))
+#define WSH_SHELL_STRNCPY(pD, pS, sz) strncpy((pD), (pS), (sz))
 #endif
 
 #ifndef WSH_SHELL_STRLEN
-    #define WSH_SHELL_STRLEN(pS) strlen((pS))
+#define WSH_SHELL_STRLEN(pS) strlen((pS))
 #endif
 
 #ifndef WSH_SHELL_STRNLEN
-    #define WSH_SHELL_STRNLEN(pS, len) strnlen((pS), (len))
+#define WSH_SHELL_STRNLEN(pS, len) strnlen((pS), (len))
 #endif
 
 #ifndef WSH_SHELL_STRCMP
-    #define WSH_SHELL_STRCMP(pS1, pS2) strcmp((pS1), (pS2))
+#define WSH_SHELL_STRCMP(pS1, pS2) strcmp((pS1), (pS2))
 #endif
 
 #ifndef WSH_SHELL_STRNCMP
-    #define WSH_SHELL_STRNCMP(pS1, pS2, len) strncmp((pS1), (pS2), (len))
+#define WSH_SHELL_STRNCMP(pS1, pS2, len) strncmp((pS1), (pS2), (len))
 #endif
 
 #ifndef WSH_SHELL_STRTOL
-    #define WSH_SHELL_STRTOL(pS, pE, radix) strtol((pS), (pE), (radix))
+#define WSH_SHELL_STRTOL(pS, pE, radix) strtol((pS), (pE), (radix))
 #endif
 
 #ifndef WSH_SHELL_STRTOF
-    #define WSH_SHELL_STRTOF(pN, pE) strtof((pN), (pE))
+#define WSH_SHELL_STRTOF(pN, pE) strtof((pN), (pE))
 #endif
 
 #ifndef WSH_SHELL_SNPRINTF
-    #define WSH_SHELL_SNPRINTF(buf, size, ...) snprintf((buf), (size), __VA_ARGS__)
+#define WSH_SHELL_SNPRINTF(buf, size, ...) snprintf((buf), (size), __VA_ARGS__)
 #endif
 
 /* 
